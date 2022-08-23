@@ -21,7 +21,6 @@ public class ViewCreator {
         return ta;
     }
 
-
     public JComboBox<String> makeComboBox(JPanel root, String[] list, int x, int y, int w, int h) {
         JComboBox<String> jl = new JComboBox<>(list);
         jl.setBounds(x, y, w, h);

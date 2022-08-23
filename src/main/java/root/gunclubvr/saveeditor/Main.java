@@ -15,6 +15,9 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import static root.gunclubvr.saveeditor.Upgrades.Ammo_Overpressure;
+import static root.gunclubvr.saveeditor.Upgrades.Ammo_Zombie;
+
 public class Main {
 
     /* Instructions
@@ -42,16 +45,18 @@ public class Main {
     private JTabbedPane tabbedPane;
     ViewCreator vc = new ViewCreator();
     JTextField backupDirectory_TextField;
-    JLabel savegameDirectory_Label;
     JTextArea savegameData_TextArea;
-    JButton patchAllGunsIntoSave_Button, patchAllIntoSave_Button, wipeAllPurchases_Button;
+    JButton patchAllGunsIntoSave_Button, patchAllIntoSave_Button, wipeAllPurchases_Button,
+            unlockMaxMagazineSize_Button, unlockZombieRounds_Button, overrideWithLoadedSave_Button;
+    JLabel currentCash_Label, currentPlaytime_Label;
     static String SAVEGAME_FILE = "";
     static String SAVEGAME_DATA = "";
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         JFrame frame = new JFrame("GunClub VR Save Editor v" + Data.VERSION + "b");
         frame.setContentPane(new Main().rootPanel);
@@ -68,7 +73,7 @@ public class Main {
     public Main() {
         try {
             if (Utils.isUpdateAvailable()) {
-                int result = JOptionPane.showConfirmDialog(rootPanel, "Update available", "An update is available. Would you like to open the download page?", JOptionPane.OK_CANCEL_OPTION);
+                int result = JOptionPane.showConfirmDialog(rootPanel, "An update is available. Would you like to open the download page?", "Update available", JOptionPane.OK_CANCEL_OPTION);
                 if (result == JOptionPane.OK_OPTION) {
                     Desktop.getDesktop().browse(new URI("https://github.com/Ldalvik/GunClubVR-SaveEditor/releases"));
                 }
@@ -80,62 +85,114 @@ public class Main {
         patchingPane();
     }
 
-    private void howToUsePane(){
+    private void howToUsePane() {
         howToUsePanel.setLayout(null);
         vc.makeLabel(howToUsePanel,
                 """
-                <html>
-                    <h3>HOW TO USE</h3>
-                    <p><em>Make sure you make backups of your save and keep them somewhere safe on your computer.
-                    You never know if something happens and you can't reverse it.<em></p>
-                    
-                </html>
-                """,
-                15, -200, 700, 500);
+                        <html>
+                            <h4 style="color: red">WARNING: Make sure you make backups of your save and keep them somewhere safe on your computer.
+                            You never know if something happens and you can't reverse it.</h4>
+                            <h3>HOW TO USE</h3>
+                            <ul style="font-size: 8px">
+                                <li>Install Loader (FFA-AIO)
+                                <li>Connect your Oculus, click refresh all in the Loader (Quest) app, and make sure "no device" is off
+                                <li>Click the "BACKUP" button and select GunClub VR. Click start to begin the backup.</li>
+                                <li>MAKE A BACKUP OF YOUR SAVE-GAME. Copy the folder that has the date of the backup.</li>
+                                <li>Open up GunClubVR Save Editor and go to the "patching" tab. Paste in the ENTIRE directory of the save-game you want to modify into the text-box. The closer you are to the "TBMProfiles" file, the better. (Faster too)</li>
+                                <li>Choose which option you want. At the time of this writing, these are the available features:
+                                    <ol>
+                                        <li><p style="color:red">Add all guns.</p> (THIS WILL ERASE ALL ATTACHMENTS YOU'VE PURCHASED!)</li>
+                                        <li><p style="color:red">Add all guns and attachments.</p> (This will remove all purchases, but you get most of them back anyway. There are some gun specific upgrades you will still have to purchase.)</li>
+                                        <li><p style="color:red">Unlock max magazine size.</p> You will need to purchase the very first upgrade for ammo capacity on the gun(s) you want to unlock it for. This is guaranteed to work for all pistols and most of the assault rifles/SMGs. There are too many variations of shotguns and sniper rifle magazines to deal with.</li>
+                                        <li><p style="color:red">Unlock Zombie rounds.</p> You will also need to purchase the very first upgrade for damage (Overpressure) on the gun(s) you want to unlock it for. Ammo type is universal throughout all guns, so whatever weapon you purchase Overpressure rounds on will have Zombie rounds after patching.</li>
+                                        <li><p style="color:red">Override with completed save-game.</p> THIS WILL OVERRIDE YOUR SAVE-GAME WITH MY OWN. As long as you backup your save-game, you can always return to it afterwards by restoring it with Loader. This save-game has every single item unlocked and every mission completed, and a bunch of money you'll never need (unless you buy the DLC).</li>
+                                        <li><p style="color:red">Wipe all owned items.</p> This will wipe all guns and attachments and leave you with a only a Glock-17. Useful if something gets messed up, or you just want to restart for whatever reason.</li>
+                                    </ol>
+                                </li>
+                                <li>After you've chosen your options, open up Loader and click "RESTORE", then select the date of the save-game you modified. As of right now, it has to be in the "/_LoaderBackups/Saves-Only/00.00.00/" folder to work. If it goes through without any warnings, you should be all set! Enjoy :)
+                            </ul>
+                        </html>
+                        """,
+                15, 10, 635, 500);
 
     }
+
     private void patchingPane() {
         patchingPanel.setLayout(null);
 
         vc.makeLabel(patchingPanel, "Save-game location", 10, 0, 225, 30);
 
-        backupDirectory_TextField = vc.makeTextField(patchingPanel, 10, 30, 535, 30);
+        backupDirectory_TextField = vc.makeTextField(patchingPanel, 10, 30, 525, 30);
         backupDirectory_TextField.setText(System.getProperty("user.home") + "\\Downloads\\_LoaderBackups\\Saves-Only");
 
-        vc.makeLabel(patchingPanel, "<html>Pick the directory closest to your save-game file (TBMProfiles). If there are multiple game-saves, it might not get the one you want.</html>", 10, 45, 500, 60);
+        vc.makeLabel(patchingPanel, "<html>Pick the directory closest to your save-game file (TBMProfiles). If there are multiple save-games under that folder, it might not get the one you want.</html>", 10, 45, 500, 60);
 
-        vc.makeButton(patchingPanel, "Check save-game", 550, 30, 130,30).addActionListener(this::checkSaveGame);
+        vc.makeButton(patchingPanel, "Check for save-game", 540, 30, 130, 30).addActionListener(this::checkSaveGame);
 
-        savegameDirectory_Label = vc.makeLabel(patchingPanel, "Save-game: -", 10, 90, 600, 30);
+        currentCash_Label = vc.makeLabel(patchingPanel, "<html><em>Cash (Default profile):<em></html> $0", 10, 90, 200, 30);
+        currentPlaytime_Label = vc.makeLabel(patchingPanel, "<html><em>Playtime (Default profile):<em></html> ", 10, 105, 200, 30);
 
-        patchAllGunsIntoSave_Button = vc.makeButton(patchingPanel, "Patch all guns into save", 10, 120, 190,30);
+        patchAllGunsIntoSave_Button = vc.makeButton(patchingPanel, "Patch all guns into save", 10, 140, 210, 30);
         patchAllGunsIntoSave_Button.addActionListener(this::patchAllGuns);
         patchAllGunsIntoSave_Button.setEnabled(false);
 
-        patchAllIntoSave_Button = vc.makeButton(patchingPanel, "Patch all guns and attachments into save", 200, 120, 230,30);
+        patchAllIntoSave_Button = vc.makeButton(patchingPanel, "Patch all guns and attachments into save", 225, 140, 230, 30);
         patchAllIntoSave_Button.addActionListener(this::patchAll);
         patchAllIntoSave_Button.setEnabled(false);
 
-        wipeAllPurchases_Button = vc.makeButton(patchingPanel, "Wipe all owned items (besides G17)", 420, 120, 230,30);
+        wipeAllPurchases_Button = vc.makeButton(patchingPanel, "Wipe all owned items (besides G17)", 460, 140, 210, 30);
         wipeAllPurchases_Button.addActionListener(this::wipeAll);
         wipeAllPurchases_Button.setEnabled(false);
 
-        savegameData_TextArea = vc.makeTextArea(patchingPanel, 100,100, 10, 165, 665,390);
+        unlockMaxMagazineSize_Button = vc.makeButton(patchingPanel, "Unlock max magazine size (pistols & assault rifles)", 10, 175, 300, 30);
+        unlockMaxMagazineSize_Button.addActionListener(this::unlockMagazines);
+        unlockMaxMagazineSize_Button.setEnabled(false);
+
+        unlockZombieRounds_Button = vc.makeButton(patchingPanel, "Unlock Zombie rounds (all weapons, must have Overpressure ammo)", 315, 175, 355, 30);
+        unlockZombieRounds_Button.addActionListener(this::unlockZombieRounds);
+        unlockZombieRounds_Button.setEnabled(false);
+
+        overrideWithLoadedSave_Button = vc.makeButton(patchingPanel, "Override with completed save-game (Backup your game-save before doing this)", 10, 210, 650, 30);
+        overrideWithLoadedSave_Button.setForeground(Color.red);
+        overrideWithLoadedSave_Button.addActionListener(this::wipeAll);
+        overrideWithLoadedSave_Button.setEnabled(false);
+
+        savegameData_TextArea = vc.makeTextArea(patchingPanel, 100, 100, 10, 270, 660, 270);
         savegameData_TextArea.setLineWrap(true);
-        savegameData_TextArea.setAutoscrolls(true);
+    }
+
+    private void unlockZombieRounds(ActionEvent event) {
+        String data = SAVEGAME_DATA;
+        String newData = data.replaceAll(Ammo_Overpressure, Ammo_Zombie);
+        if (newData.contains(Ammo_Zombie)) {
+            try {
+                FileWriter myWriter = new FileWriter(SAVEGAME_FILE);
+                myWriter.write(newData);
+                myWriter.close();
+                savegameData_TextArea.setText(newData);
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "SAVE-GAME patching complete :)", "Your save-game profile has been successfully patched.", JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "SAVE-GAME patching failed :(", "Sadly the regex failed to grab the ammunition type. Check to make sure You purchased the Overpressure ammo type for at least one weapon.", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void unlockMagazines(ActionEvent event) {
     }
 
     protected static void find(String searchDirectory) throws IOException {
         File[] files = new File(searchDirectory).listFiles();
         assert files != null;
-            for (File file : files) {
-                BasicFileAttributes basicFileAttributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-                if (basicFileAttributes.isDirectory()) find(file.getAbsolutePath());
-                if (basicFileAttributes.isRegularFile() && file.getName().equals("TBMProfiles")) {
-                    SAVEGAME_FILE = file.getAbsolutePath();
-                    SAVEGAME_DATA = Files.readString(Path.of(SAVEGAME_FILE));
-                }
+        for (File file : files) {
+            BasicFileAttributes basicFileAttributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+            if (basicFileAttributes.isDirectory()) find(file.getAbsolutePath());
+            if (basicFileAttributes.isRegularFile() && file.getName().equals("TBMProfiles")) {
+                SAVEGAME_FILE = file.getAbsolutePath();
+                SAVEGAME_DATA = Files.readString(Path.of(SAVEGAME_FILE));
             }
+        }
     }
 
     /**
@@ -149,26 +206,30 @@ public class Main {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        if(SAVEGAME_FILE.isEmpty()) {
-            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Save-game not found","This usually happens when there is no TBMProfiles found under the directory you picked. Please make sure you put it in correctly and that the TBMProfiles actually exists.", JOptionPane.ERROR_MESSAGE);
+        if (SAVEGAME_FILE.isEmpty()) {
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Save-game not found", "This usually happens when there is no TBMProfiles found under the directory you picked. Please make sure you put it in correctly and that the TBMProfiles actually exists.", JOptionPane.ERROR_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Location: " + SAVEGAME_FILE,"Save-game found!", JOptionPane.INFORMATION_MESSAGE);
-            savegameDirectory_Label.setText("Save-game: " + SAVEGAME_FILE);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Location: " + SAVEGAME_FILE, "Save-game found!", JOptionPane.INFORMATION_MESSAGE);
+            backupDirectory_TextField.setText(SAVEGAME_FILE);
             savegameData_TextArea.setText(SAVEGAME_DATA);
-
+            currentCash_Label.setText("<html><em>Cash (Default profile):<em> $" + Utils.getCash(SAVEGAME_DATA) + "</html>");
+            currentPlaytime_Label.setText("<html><em>Playtime (Default profile):<em> " + Utils.getPlayTime(SAVEGAME_DATA) + "</html>");
             patchAllGunsIntoSave_Button.setEnabled(true);
             patchAllIntoSave_Button.setEnabled(true);
             wipeAllPurchases_Button.setEnabled(true);
+            unlockMaxMagazineSize_Button.setEnabled(true);
+            unlockZombieRounds_Button.setEnabled(true);
+            overrideWithLoadedSave_Button.setEnabled(true);
         }
     }
 
     /**
      * Save-game patching methods.
-     * @TODO:
-     *  -Add option to choose second profile instead of the first (default) one.
-     *     E.G: int p1 = data.indexOf(firstDelim, data.indexOf(firstDelim));
+     *
+     * @TODO: -Add option to choose second profile instead of the first (default) one.
+     * E.G: int p1 = data.indexOf(firstDelim, data.indexOf(firstDelim));
      */
-    public void patchAllGuns(ActionEvent event){
+    public void patchAllGuns(ActionEvent event) {
         String data = SAVEGAME_DATA;
         String firstDelim = "\\\"m_purchaseData\\\":{\\\"ownedItems\\\":[";
         int p1 = data.indexOf(firstDelim);
