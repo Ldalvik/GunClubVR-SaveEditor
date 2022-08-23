@@ -10,13 +10,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Arrays;
-import java.util.stream.Stream;
 
-import static root.gunclubvr.saveeditor.Upgrades.Ammo_Overpressure;
-import static root.gunclubvr.saveeditor.Upgrades.Ammo_Zombie;
+import static root.gunclubvr.saveeditor.Upgrades.*;
 
 public class Main {
 
@@ -46,8 +42,9 @@ public class Main {
     ViewCreator vc = new ViewCreator();
     JTextField backupDirectory_TextField;
     JTextArea savegameData_TextArea;
-    JButton patchAllGunsIntoSave_Button, patchAllIntoSave_Button, wipeAllPurchases_Button,
-            unlockMaxMagazineSize_Button, unlockZombieRounds_Button, overrideWithLoadedSave_Button;
+    JButton unlockAllGuns_Button, unlockAllGunsAndAttachments_Button, unlockEverything_Button,
+            unlockMaxMagazineSize_Button, unlockZombieRounds_Button, overrideWithLoadedSave_Button,
+            wipeAllPurchases_Button;
     JLabel currentCash_Label, currentPlaytime_Label;
     static String SAVEGAME_FILE = "";
     static String SAVEGAME_DATA = "";
@@ -64,7 +61,7 @@ public class Main {
         //frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         //frame.setSize(1000, 1000);
         //frame.setMaximumSize(new Dimension(1000, 1000));
-        frame.setMinimumSize(new Dimension(700, 600));
+        frame.setMinimumSize(new Dimension(700, 700));
         frame.setLocationRelativeTo(null);
         frame.pack();
         frame.setVisible(true);
@@ -103,7 +100,8 @@ public class Main {
                                     <ol>
                                         <li><p style="color:red">Add all guns.</p> (THIS WILL ERASE ALL ATTACHMENTS YOU'VE PURCHASED!)</li>
                                         <li><p style="color:red">Add all guns and attachments.</p> (This will remove all purchases, but you get most of them back anyway. There are some gun specific upgrades you will still have to purchase.)</li>
-                                        <li><p style="color:red">Unlock max magazine size.</p> You will need to purchase the very first upgrade for ammo capacity on the gun(s) you want to unlock it for. This is guaranteed to work for all pistols and most of the assault rifles/SMGs. There are too many variations of shotguns and sniper rifle magazines to deal with.</li>
+                                        <li><p style="color:red">Add EVERYTHING (guns, all global/gun specific attachments, ammo, magazines).</p> Good for the sandbox people or gun enthusiasts. This adds all weapons, global attachments, gun specific attachments, magazine sizes, and ammo types. This is pretty much what the "Override with completed save-game" is but it keeps your current campaign progress.</li>
+                                        <li><p style="color:red">Unlock 100 round drum size.</p> You will NEED to purchase the 50 round upgrade for ammo capacity on the pistol(s) you want to unlock it for. This is because any gun that doesn't have it, won't have a 100 drum either (Like the Deagle or revolvers). Note that this may not work for guns that have a specified ammo type, like .45 acp drum mags.</li>
                                         <li><p style="color:red">Unlock Zombie rounds.</p> You will also need to purchase the very first upgrade for damage (Overpressure) on the gun(s) you want to unlock it for. Ammo type is universal throughout all guns, so whatever weapon you purchase Overpressure rounds on will have Zombie rounds after patching.</li>
                                         <li><p style="color:red">Override with completed save-game.</p> THIS WILL OVERRIDE YOUR SAVE-GAME WITH MY OWN. As long as you backup your save-game, you can always return to it afterwards by restoring it with Loader. This save-game has every single item unlocked and every mission completed, and a bunch of money you'll never need (unless you buy the DLC).</li>
                                         <li><p style="color:red">Wipe all owned items.</p> This will wipe all guns and attachments and leave you with a only a Glock-17. Useful if something gets messed up, or you just want to restart for whatever reason.</li>
@@ -113,7 +111,7 @@ public class Main {
                             </ul>
                         </html>
                         """,
-                15, 10, 635, 500);
+                15, 0, 635, 600);
 
     }
 
@@ -132,19 +130,19 @@ public class Main {
         currentCash_Label = vc.makeLabel(patchingPanel, "<html><em>Cash (Default profile):<em></html> $0", 10, 90, 200, 30);
         currentPlaytime_Label = vc.makeLabel(patchingPanel, "<html><em>Playtime (Default profile):<em></html> ", 10, 105, 200, 30);
 
-        patchAllGunsIntoSave_Button = vc.makeButton(patchingPanel, "Patch all guns into save", 10, 140, 210, 30);
-        patchAllGunsIntoSave_Button.addActionListener(this::patchAllGuns);
-        patchAllGunsIntoSave_Button.setEnabled(false);
+        unlockAllGuns_Button = vc.makeButton(patchingPanel, "Add all guns", 10, 140, 90, 30);
+        unlockAllGuns_Button.addActionListener(this::unlockAllGuns);
+        unlockAllGuns_Button.setEnabled(false);
 
-        patchAllIntoSave_Button = vc.makeButton(patchingPanel, "Patch all guns and attachments into save", 225, 140, 230, 30);
-        patchAllIntoSave_Button.addActionListener(this::patchAll);
-        patchAllIntoSave_Button.setEnabled(false);
+        unlockAllGunsAndAttachments_Button = vc.makeButton(patchingPanel, "Add all guns/attachments", 100, 140, 160, 30);
+        unlockAllGunsAndAttachments_Button.addActionListener(this::unlockGunsAndAttachments);
+        unlockAllGunsAndAttachments_Button.setEnabled(false);
 
-        wipeAllPurchases_Button = vc.makeButton(patchingPanel, "Wipe all owned items (besides G17)", 460, 140, 210, 30);
-        wipeAllPurchases_Button.addActionListener(this::wipeAll);
-        wipeAllPurchases_Button.setEnabled(false);
+        unlockEverything_Button = vc.makeButton(patchingPanel, "(Soon) Unlock EVERYTHING (guns, all global/gun specific attachments, ammo, magazines)", 260, 140, 410, 30);
+        unlockEverything_Button.addActionListener(this::unlockEverything);
+        unlockEverything_Button.setEnabled(false);
 
-        unlockMaxMagazineSize_Button = vc.makeButton(patchingPanel, "Unlock max magazine size (pistols & assault rifles)", 10, 175, 300, 30);
+        unlockMaxMagazineSize_Button = vc.makeButton(patchingPanel, "Unlock max magazine size (must have 50 drum installed)", 10, 175, 300, 30);
         unlockMaxMagazineSize_Button.addActionListener(this::unlockMagazines);
         unlockMaxMagazineSize_Button.setEnabled(false);
 
@@ -152,34 +150,18 @@ public class Main {
         unlockZombieRounds_Button.addActionListener(this::unlockZombieRounds);
         unlockZombieRounds_Button.setEnabled(false);
 
-        overrideWithLoadedSave_Button = vc.makeButton(patchingPanel, "Override with completed save-game (Backup your game-save before doing this)", 10, 210, 650, 30);
+        overrideWithLoadedSave_Button = vc.makeButton(patchingPanel, "Override with completed save-game (Backup your game-save before doing this)", 10, 210, 660, 30);
         overrideWithLoadedSave_Button.setForeground(Color.red);
         overrideWithLoadedSave_Button.addActionListener(this::wipeAll);
         overrideWithLoadedSave_Button.setEnabled(false);
 
-        savegameData_TextArea = vc.makeTextArea(patchingPanel, 100, 100, 10, 270, 660, 270);
+        wipeAllPurchases_Button = vc.makeButton(patchingPanel, "Wipe all owned items (besides G17)", 10, 250, 660, 30);
+        wipeAllPurchases_Button.setForeground(Color.red);
+        wipeAllPurchases_Button.addActionListener(this::wipeAll);
+        wipeAllPurchases_Button.setEnabled(false);
+
+        savegameData_TextArea = vc.makeTextArea(patchingPanel, 100, 100, 10, 290, 660, 335);
         savegameData_TextArea.setLineWrap(true);
-    }
-
-    private void unlockZombieRounds(ActionEvent event) {
-        String data = SAVEGAME_DATA;
-        String newData = data.replaceAll(Ammo_Overpressure, Ammo_Zombie);
-        if (newData.contains(Ammo_Zombie)) {
-            try {
-                FileWriter myWriter = new FileWriter(SAVEGAME_FILE);
-                myWriter.write(newData);
-                myWriter.close();
-                savegameData_TextArea.setText(newData);
-                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "SAVE-GAME patching complete :)", "Your save-game profile has been successfully patched.", JOptionPane.INFORMATION_MESSAGE);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "SAVE-GAME patching failed :(", "Sadly the regex failed to grab the ammunition type. Check to make sure You purchased the Overpressure ammo type for at least one weapon.", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private void unlockMagazines(ActionEvent event) {
     }
 
     protected static void find(String searchDirectory) throws IOException {
@@ -214,8 +196,9 @@ public class Main {
             savegameData_TextArea.setText(SAVEGAME_DATA);
             currentCash_Label.setText("<html><em>Cash (Default profile):<em> $" + Utils.getCash(SAVEGAME_DATA) + "</html>");
             currentPlaytime_Label.setText("<html><em>Playtime (Default profile):<em> " + Utils.getPlayTime(SAVEGAME_DATA) + "</html>");
-            patchAllGunsIntoSave_Button.setEnabled(true);
-            patchAllIntoSave_Button.setEnabled(true);
+            unlockAllGuns_Button.setEnabled(true);
+            unlockAllGunsAndAttachments_Button.setEnabled(true);
+            //unlockEverything_Button.setEnabled(true);
             wipeAllPurchases_Button.setEnabled(true);
             unlockMaxMagazineSize_Button.setEnabled(true);
             unlockZombieRounds_Button.setEnabled(true);
@@ -226,10 +209,10 @@ public class Main {
     /**
      * Save-game patching methods.
      *
-     * @TODO: -Add option to choose second profile instead of the first (default) one.
+     * {@code @TODO:} -Add option to choose second profile instead of the first (default) one.
      * E.G: int p1 = data.indexOf(firstDelim, data.indexOf(firstDelim));
      */
-    public void patchAllGuns(ActionEvent event) {
+    public void unlockAllGuns(ActionEvent event) {
         String data = SAVEGAME_DATA;
         String firstDelim = "\\\"m_purchaseData\\\":{\\\"ownedItems\\\":[";
         int p1 = data.indexOf(firstDelim);
@@ -254,7 +237,7 @@ public class Main {
         }
     }
 
-    public void patchAll(ActionEvent event) {
+    public void unlockGunsAndAttachments(ActionEvent event) {
         String data = SAVEGAME_DATA;
         String firstDelim = "\\\"m_purchaseData\\\":{\\\"ownedItems\\\":[";
         int p1 = data.indexOf(firstDelim);
@@ -278,6 +261,60 @@ public class Main {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "SAVE-GAME patching failed :(", "Sadly the regex failed to grab your purchased items. Check to make sure \"ownedItems:[]\" exists in your TBMProfiles.", JOptionPane.ERROR_MESSAGE);
         }
     }
+    private void unlockEverything(ActionEvent event) {
+        String data = SAVEGAME_DATA;
+        String newData = "";
+        if (newData.contains(Ammo_Zombie)) {
+            try {
+                FileWriter myWriter = new FileWriter(SAVEGAME_FILE);
+                myWriter.write(newData);
+                myWriter.close();
+                savegameData_TextArea.setText(newData);
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "SAVE-GAME patching complete :)", "Your save-game profile has been successfully patched.", JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "SAVE-GAME patching failed :(", "Sadly the regex failed to grab the required data. Check to make sure your profile isn't corrupted.", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void unlockMagazines(ActionEvent event) {
+        String data = SAVEGAME_DATA;
+        String newData = data.replaceAll(NativeMag1, Ammo_Zombie);
+        if (newData.contains(Ammo_Zombie)) {
+            try {
+                FileWriter myWriter = new FileWriter(SAVEGAME_FILE);
+                myWriter.write(newData);
+                myWriter.close();
+                savegameData_TextArea.setText(newData);
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "SAVE-GAME patching complete :)", "Your save-game profile has been successfully patched.", JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "SAVE-GAME patching failed :(", "Sadly the regex failed to grab the ammunition type. Check to make sure You purchased the Overpressure ammo type for at least one weapon.", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void unlockZombieRounds(ActionEvent event) {
+        String data = SAVEGAME_DATA;
+        String newData = data.replaceAll(Ammo_Overpressure, Ammo_Zombie);
+        if (newData.contains(Ammo_Zombie)) {
+            try {
+                FileWriter myWriter = new FileWriter(SAVEGAME_FILE);
+                myWriter.write(newData);
+                myWriter.close();
+                savegameData_TextArea.setText(newData);
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "SAVE-GAME patching complete :)", "Your save-game profile has been successfully patched.", JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "SAVE-GAME patching failed :(", "Sadly the regex failed to grab the ammunition type. Check to make sure You purchased the Overpressure ammo type for at least one weapon.", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
 
     public void wipeAll(ActionEvent event) {
         String data = SAVEGAME_DATA;
