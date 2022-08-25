@@ -47,7 +47,6 @@ public class Main {
             wipeAllPurchases_Button;
     JLabel currentCash_Label, currentPlaytime_Label;
     static String SAVEGAME_FILE = "";
-    static String SAVEGAME_DATA = "";
 
     public static void main(String[] args) {
         try {
@@ -150,9 +149,9 @@ public class Main {
         unlockZombieRounds_Button.addActionListener(this::unlockZombieRounds);
         unlockZombieRounds_Button.setEnabled(false);
 
-        overrideWithLoadedSave_Button = vc.makeButton(patchingPanel, "Override with completed save-game (Backup your game-save before doing this)", 10, 210, 660, 30);
+        overrideWithLoadedSave_Button = vc.makeButton(patchingPanel, "(Soon) Override with completed save-game (Backup your game-save before doing this)", 10, 210, 660, 30);
         overrideWithLoadedSave_Button.setForeground(Color.red);
-        overrideWithLoadedSave_Button.addActionListener(this::wipeAll);
+        overrideWithLoadedSave_Button.addActionListener(this::overrideSave);
         overrideWithLoadedSave_Button.setEnabled(false);
 
         wipeAllPurchases_Button = vc.makeButton(patchingPanel, "Wipe all owned items (besides G17)", 10, 250, 660, 30);
@@ -168,11 +167,10 @@ public class Main {
         File[] files = new File(searchDirectory).listFiles();
         assert files != null;
         for (File file : files) {
-            BasicFileAttributes basicFileAttributes = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-            if (basicFileAttributes.isDirectory()) find(file.getAbsolutePath());
-            if (basicFileAttributes.isRegularFile() && file.getName().equals("TBMProfiles")) {
+            BasicFileAttributes fileAttr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+            if (fileAttr.isDirectory()) find(file.getAbsolutePath());
+            if (fileAttr.isRegularFile() && file.getName().equals("TBMProfiles")) {
                 SAVEGAME_FILE = file.getAbsolutePath();
-                SAVEGAME_DATA = Files.readString(Path.of(SAVEGAME_FILE));
             }
         }
     }
@@ -193,16 +191,16 @@ public class Main {
         } else {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Location: " + SAVEGAME_FILE, "Save-game found!", JOptionPane.INFORMATION_MESSAGE);
             backupDirectory_TextField.setText(SAVEGAME_FILE);
-            savegameData_TextArea.setText(SAVEGAME_DATA);
-            currentCash_Label.setText("<html><em>Cash (Default profile):<em> $" + Utils.getCash(SAVEGAME_DATA) + "</html>");
-            currentPlaytime_Label.setText("<html><em>Playtime (Default profile):<em> " + Utils.getPlayTime(SAVEGAME_DATA) + "</html>");
+            savegameData_TextArea.setText(getSaveGameFile());
+            currentCash_Label.setText("<html><em>Cash (Default profile):<em> $" + Utils.getCash(getSaveGameFile()) + "</html>");
+            currentPlaytime_Label.setText("<html><em>Playtime (Default profile):<em> " + Utils.getPlayTime(getSaveGameFile()) + "</html>");
             unlockAllGuns_Button.setEnabled(true);
             unlockAllGunsAndAttachments_Button.setEnabled(true);
             //unlockEverything_Button.setEnabled(true);
             wipeAllPurchases_Button.setEnabled(true);
             unlockMaxMagazineSize_Button.setEnabled(true);
             unlockZombieRounds_Button.setEnabled(true);
-            overrideWithLoadedSave_Button.setEnabled(true);
+            //overrideWithLoadedSave_Button.setEnabled(true);
         }
     }
 
@@ -213,7 +211,7 @@ public class Main {
      * E.G: int p1 = data.indexOf(firstDelim, data.indexOf(firstDelim));
      */
     public void unlockAllGuns(ActionEvent event) {
-        String data = SAVEGAME_DATA;
+        String data = getSaveGameFile();
         String firstDelim = "\\\"m_purchaseData\\\":{\\\"ownedItems\\\":[";
         int p1 = data.indexOf(firstDelim);
         String lastDelim = "]},";
@@ -228,17 +226,17 @@ public class Main {
                 myWriter.write(result);
                 myWriter.close();
                 savegameData_TextArea.setText(result);
-                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "SAVE-GAME patching complete :)", "Your save-game profile has been successfully patched.", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(),  "Your save-game profile has been successfully patched.", "SAVE-GAME patching complete :)", JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
-            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "SAVE-GAME patching failed :(", "Sadly the regex failed to grab your purchased items. Check to make sure \"ownedItems:[]\" exists in your TBMProfiles.", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Sadly the regex failed to grab your purchased items. Check to make sure \"ownedItems:[]\" exists in your TBMProfiles.","SAVE-GAME patching failed :(", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     public void unlockGunsAndAttachments(ActionEvent event) {
-        String data = SAVEGAME_DATA;
+        String data = getSaveGameFile();
         String firstDelim = "\\\"m_purchaseData\\\":{\\\"ownedItems\\\":[";
         int p1 = data.indexOf(firstDelim);
         String lastDelim = "]},";
@@ -253,52 +251,54 @@ public class Main {
                 myWriter.write(result);
                 myWriter.close();
                 savegameData_TextArea.setText(result);
-                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "SAVE-GAME patching complete :)", "Your save-game profile has been successfully patched.", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(),  "Your save-game profile has been successfully patched.","SAVE-GAME patching complete :)", JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
-            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "SAVE-GAME patching failed :(", "Sadly the regex failed to grab your purchased items. Check to make sure \"ownedItems:[]\" exists in your TBMProfiles.", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Sadly the regex failed to grab your purchased items. Check to make sure \"ownedItems:[]\" exists in your TBMProfiles.", "SAVE-GAME patching failed :(",  JOptionPane.ERROR_MESSAGE);
         }
     }
+
+    //IN PROGRESS, STILL PLAYING THE GAME AND UNLOCKING EVERYTHING LOL.
     private void unlockEverything(ActionEvent event) {
-        String data = SAVEGAME_DATA;
+        String data = getSaveGameFile();
         String newData = "";
-        if (newData.contains(Ammo_Zombie)) {
+        if (newData.contains("")) {
             try {
                 FileWriter myWriter = new FileWriter(SAVEGAME_FILE);
                 myWriter.write(newData);
                 myWriter.close();
                 savegameData_TextArea.setText(newData);
-                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "SAVE-GAME patching complete :)", "Your save-game profile has been successfully patched.", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(),  "Your save-game profile has been successfully patched.", "SAVE-GAME patching complete :)", JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
-            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "SAVE-GAME patching failed :(", "Sadly the regex failed to grab the required data. Check to make sure your profile isn't corrupted.", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Sadly the regex failed to grab the required data. Check to make sure your profile isn't corrupted.", "SAVE-GAME patching failed :(", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void unlockMagazines(ActionEvent event) {
-        String data = SAVEGAME_DATA;
-        String newData = data.replaceAll(NativeMag1, Ammo_Zombie);
-        if (newData.contains(Ammo_Zombie)) {
+        String data = getSaveGameFile();
+        String newData = data.replaceAll(Pistol50Drum, PistolDrum);
+        if (newData.contains(PistolDrum)) {
             try {
                 FileWriter myWriter = new FileWriter(SAVEGAME_FILE);
                 myWriter.write(newData);
                 myWriter.close();
                 savegameData_TextArea.setText(newData);
-                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "SAVE-GAME patching complete :)", "Your save-game profile has been successfully patched.", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Your save-game profile has been successfully patched.", "SAVE-GAME patching complete :)", JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
-            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "SAVE-GAME patching failed :(", "Sadly the regex failed to grab the ammunition type. Check to make sure You purchased the Overpressure ammo type for at least one weapon.", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(),"Sadly the regex failed to grab the magazine type. Check to make sure you purchased the 50 round drum mag for at least one weapon.", "SAVE-GAME patching failed :(", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void unlockZombieRounds(ActionEvent event) {
-        String data = SAVEGAME_DATA;
+        String data = getSaveGameFile();
         String newData = data.replaceAll(Ammo_Overpressure, Ammo_Zombie);
         if (newData.contains(Ammo_Zombie)) {
             try {
@@ -306,18 +306,23 @@ public class Main {
                 myWriter.write(newData);
                 myWriter.close();
                 savegameData_TextArea.setText(newData);
-                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "SAVE-GAME patching complete :)", "Your save-game profile has been successfully patched.", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Your save-game profile has been successfully patched.", "SAVE-GAME patching complete :)", JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
-            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "SAVE-GAME patching failed :(", "Sadly the regex failed to grab the ammunition type. Check to make sure You purchased the Overpressure ammo type for at least one weapon.", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(),  "Sadly the regex failed to grab the ammunition type. Check to make sure you purchased the Overpressure ammo type for at least one weapon.", "SAVE-GAME patching failed :(", JOptionPane.ERROR_MESSAGE);
         }
     }
 
 
+    //ALSO WORK IN PROGRESS, STILL BEATING THE GAME
+    public void overrideSave(ActionEvent event) {
+
+    }
+
     public void wipeAll(ActionEvent event) {
-        String data = SAVEGAME_DATA;
+        String data = getSaveGameFile();
         String firstDelim = "\\\"m_purchaseData\\\":{\\\"ownedItems\\\":[";
         int p1 = data.indexOf(firstDelim);
         String lastDelim = "]},";
@@ -339,5 +344,15 @@ public class Main {
         } else {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "SAVE-GAME patching failed :(", "Sadly the regex failed to grab your purchased items. Check to make sure \"ownedItems:[]\" exists in your TBMProfiles.", JOptionPane.ERROR_MESSAGE);
         }
+    }
+    
+    public String getSaveGameFile() {
+        String savegame = "";
+        try {
+            savegame = Files.readString(Path.of(SAVEGAME_FILE));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return savegame;
     }
 }

@@ -7,9 +7,9 @@ public class Upgrades {
      * upgrade (in both ammo capacity and damage) purchased if they wish to
      * use the "Unlock max magazine size for applicable guns" feature.
      */
-    public static String NativeMag1 = "NativeMag1"; //First ammo capacity upgrade for both pistols and assault rifles
-    public static String Quad100 = "Quad100";       //Last ammo capacity upgrade for assault rifles
-    public static String PistolDrum = "PistolDrum"; //Last ammo capacity upgrade for pistols
+    public static String PistolDrum = "PistolDrum";     //100 round drum magazine for pistols
+    public static String Pistol50Drum = "Pistol50Drum"; //50 round drum magazine for pistols
+    public static String Quad100 = "Quad100";           //Last ammo capacity upgrade for assault rifles
 
 
     /**
