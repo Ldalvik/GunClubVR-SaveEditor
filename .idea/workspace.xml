@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="GunClubVRSaveEditor:jar" />
+    </artifacts-to-build>
+  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a759b6a-b120-4993-9627-eadf9287adc5" name="Changes" comment="Fixed remaining issues, production ready">
-      <change afterPath="$PROJECT_DIR$/.idea/artifacts/GunClubVRSaveEditor_jar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/META-INF/MANIFEST.MF" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="2a759b6a-b120-4993-9627-eadf9287adc5" name="Changes" comment="RELEASE 0.0.1b">
+      <change beforePath="$PROJECT_DIR$/src/main/java/root/gunclubvr/saveeditor/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/root/gunclubvr/saveeditor/Main.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,7 +56,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "last_opened_file_path": "C:/Users/imnot/IdeaProjects/ForzaTuneDecoder",
-    "project.structure.last.edited": "Artifacts",
+    "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "preferences.sourceCode.XML"
@@ -63,11 +66,14 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\imnot\IdeaProjects\GunClubVRSaveEditor\src\main\java\root\gunclubvr\saveeditor" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\imnot\IdeaProjects\GunClubVRSaveEditor\src\main\resources" />
+    </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="root.gunclubvr.saveeditor" />
     </key>
   </component>
-  <component name="RunManager" selected="JAR Application.GunClubVRSaveEditor.jar">
+  <component name="RunManager" selected="Application.Main">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="root.gunclubvr.saveeditor.Main" />
       <module name="GunClubVRSaveEditor" />
@@ -87,8 +93,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JAR Application.GunClubVRSaveEditor.jar" />
         <item itemvalue="Application.Main" />
+        <item itemvalue="JAR Application.GunClubVRSaveEditor.jar" />
       </list>
     </recent_temporary>
   </component>
@@ -136,7 +142,14 @@
       <option name="project" value="LOCAL" />
       <updated>1661401322125</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="RELEASE 0.0.1b">
+      <created>1661401731453</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1661401731453</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -155,6 +168,7 @@
     <MESSAGE value="Added unlock zombie rounds, unlock max magazine size, and load a completed save-game." />
     <MESSAGE value="Changed unlock criteria and added unlock everything button" />
     <MESSAGE value="Fixed remaining issues, production ready" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed remaining issues, production ready" />
+    <MESSAGE value="RELEASE 0.0.1b" />
+    <option name="LAST_COMMIT_MESSAGE" value="RELEASE 0.0.1b" />
   </component>
 </project>

@@ -54,7 +54,7 @@ public class Main {
         } catch (Exception ignored) {
         }
 
-        JFrame frame = new JFrame("GunClub VR Save Editor v" + Data.VERSION + "b");
+        JFrame frame = new JFrame("GunClub VR Save Editor v" + Data.VERSION + "b  -  made with love by Root :)");
         frame.setContentPane(new Main().rootPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -86,6 +86,8 @@ public class Main {
         vc.makeLabel(howToUsePanel,
                 """
                         <html>
+                            <h5>For help, message me on discord at root.#6923</h5>
+                            
                             <h4 style="color: red">WARNING: Make sure you make backups of your save and keep them somewhere safe on your computer.
                             You never know if something happens and you can't reverse it.</h4>
                             <h3>HOW TO USE</h3>
