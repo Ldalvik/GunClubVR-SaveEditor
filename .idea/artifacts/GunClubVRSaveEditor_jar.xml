@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact name="GunClubVRSaveEditor:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/GunClubVRSaveEditor_jar</output-path>
+    <root id="root">
+      <element id="archive" name="GunClubVRSaveEditor.jar">
+        <element id="module-output" name="GunClubVRSaveEditor" />
+      </element>
+    </root>
+  </artifact>
+</component>

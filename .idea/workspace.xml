@@ -4,20 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a759b6a-b120-4993-9627-eadf9287adc5" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/root/gunclubvr/saveeditor/Data.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/root/gunclubvr/saveeditor/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/root/gunclubvr/saveeditor/Upgrades.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/root/gunclubvr/saveeditor/Utils.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/root/gunclubvr/saveeditor/ViewCreator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/version.txt" afterDir="false" />
+    <list default="true" id="2a759b6a-b120-4993-9627-eadf9287adc5" name="Changes" comment="Fixed remaining issues, production ready">
+      <change afterPath="$PROJECT_DIR$/.idea/artifacts/GunClubVRSaveEditor_jar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,7 +22,21 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="PUSH_TAGS">
+      <GitPushTagMode>
+        <option name="argument" value="--tags" />
+        <option name="title" value="All" />
+      </GitPushTagMode>
+    </option>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/src/main/java/root/gunclubvr/saveeditor/Main.java" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -49,6 +53,9 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "last_opened_file_path": "C:/Users/imnot/IdeaProjects/ForzaTuneDecoder",
+    "project.structure.last.edited": "Artifacts",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "preferences.sourceCode.XML"
   }
 }]]></component>
@@ -60,7 +67,7 @@
       <recent name="root.gunclubvr.saveeditor" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JAR Application.GunClubVRSaveEditor.jar">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="root.gunclubvr.saveeditor.Main" />
       <module name="GunClubVRSaveEditor" />
@@ -74,8 +81,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="GunClubVRSaveEditor.jar" type="JarApplication" temporary="true">
+      <option name="JAR_PATH" value="$PROJECT_DIR$/out/artifacts/GunClubVRSaveEditor_jar/GunClubVRSaveEditor.jar" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JAR Application.GunClubVRSaveEditor.jar" />
         <item itemvalue="Application.Main" />
       </list>
     </recent_temporary>
@@ -89,6 +101,42 @@
       <option name="presentableId" value="Default" />
       <updated>1661100901470</updated>
     </task>
+    <task id="LOCAL-00001" summary="Patch in all guns, guns and attachments, or wipe all purchases">
+      <created>1661227016252</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1661227016252</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Patch in all guns, guns and attachments, or wipe all purchases">
+      <created>1661227969209</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1661227969209</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Added unlock zombie rounds, unlock max magazine size, and load a completed save-game.">
+      <created>1661239400344</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1661239400344</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Changed unlock criteria and added unlock everything button">
+      <created>1661271633966</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1661271633966</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Fixed remaining issues, production ready">
+      <created>1661401322125</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1661401322125</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -101,5 +149,12 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Patch in all guns, guns and attachments, or wipe all purchases" />
+    <MESSAGE value="Added unlock zombie rounds, unlock max magazine size, and load a completed save-game." />
+    <MESSAGE value="Changed unlock criteria and added unlock everything button" />
+    <MESSAGE value="Fixed remaining issues, production ready" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed remaining issues, production ready" />
   </component>
 </project>
